@@ -1,0 +1,27 @@
+base:
+  random_state: 42
+
+audio_&_feature:
+  sampling_rate: 22050
+
+preprocessing:
+  raw_audio_pos: 'data/raw/cohort_1_pos.npy'
+  raw_audio_neg: 'data/raw/cohort_1_neg.npy'
+
+  processed_audio_pos: 'data/processed/cohort_1_pos.npy'
+  processed_audio_neg: 'data/processed/cohort_1_neg.npy'
+
+feature_extraction:
+  features_path: 'data/features/covid_features.csv'
+
+data_split:
+  test_size: 0.2
+  trainset_path: 'data/processed/train_iris.csv'
+  testset_path: 'data/processed/test_iris.csv'
+
+train:
+
+reports:
+
+
+

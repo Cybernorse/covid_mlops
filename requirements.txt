@@ -134,3 +134,5 @@ xmltodict==0.13.0
 yarl==1.8.2
 zc.lockfile==3.0
 zipp==3.13.0
+xgboost==1.1.1
+matplotlib==3.5.3
