@@ -2,6 +2,9 @@ import librosa
 import numpy as np
 import os
 import pandas as pd
+from typing import Text
+import yaml
+import argparse
 
 # librosa features column names formation
 def librosa_feature_columns():
@@ -27,46 +30,11 @@ def librosa_feature_columns():
     # dd.columns=headers
     return headers
 
-def librosa_most_important_features(dir):
-
-    als=[]
-    alss=[]
-
-    adata=[i for i in os.listdir(dir) if i.split('.')[1]=='wav' or i.split('.')[1]=='mp3'
-        or i.split('.')[1]=='flac' or i.split('.')[1]=='m4a' ]
-
-    positive=[]
-    for i in sorted(adata):
-        positive=[]
-        als=[]
-        y, sr = librosa.load(dir+i,sr=22050)
-        y = librosa.util.normalize(y)
-
-        mfcc = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T,axis=0)
-        contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr).T,axis=0)
-        chroma_stft = np.mean(librosa.feature.chroma_stft(y=y, sr=sr, n_chroma=36).T,axis=0)
-        chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr, n_chroma=36).T,axis=0)
-        spec_bw = np.mean(librosa.feature.spectral_bandwidth(y=y, sr=sr))
-
-        positive.append([spec_bw])
-        positive.append(mfcc)
-        positive.append(chroma_stft)
-        positive.append(chroma_cens)
-        positive.append(contrast)
-
-        pos=np.array(positive)
-
-        for z in pos:
-            for x in z:
-                als.append(x)
-                
-        als.append(i)
-        alss.append(als)
-
-    return alss
-
 # librosa features
-def librosa_normal_embedding(y,sr):
+def librosa_normal_embedding(y,sr,config):
+
+    # with open(config_path) as conf_file:
+    #     config = yaml.safe_load(conf_file)
 
     embedding=[]
     
@@ -76,15 +44,63 @@ def librosa_normal_embedding(y,sr):
     rolloff = np.mean(librosa.feature.spectral_rolloff(y=y, sr=sr))
     zcr = np.mean(librosa.feature.zero_crossing_rate(y))
     
-    mfcc = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T,axis=0)
-    melspec= np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=40, fmax=8000).T,axis=0)
-    chroma_stft = np.mean(librosa.feature.chroma_stft(y=y, sr=sr, n_chroma=36).T,axis=0)
-    chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr, n_chroma=36).T,axis=0)
-    chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr, n_chroma=36).T,axis=0)
-    contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr).T,axis=0)
-    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr,).T,axis=0)
+    mfcc = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=config['audio_&_feature']['n_mfcc']).T,axis=config['audio_&_feature']['axis'])
+    melspec= np.mean(librosa.feature.melspectrogram(y=y, sr=sr, n_mels=config['audio_&_feature']['n_mels'], fmax=config['audio_&_feature']['fmax']).T,axis=config['audio_&_feature']['axis'])
+    chroma_stft = np.mean(librosa.feature.chroma_stft(y=y, sr=sr, n_chroma=config['audio_&_feature']['n_chroma']).T,axis=config['audio_&_feature']['axis'])
+    chroma_cq = np.mean(librosa.feature.chroma_cqt(y=y, sr=sr, n_chroma=config['audio_&_feature']['n_chroma']).T,axis=config['audio_&_feature']['axis'])
+    chroma_cens = np.mean(librosa.feature.chroma_cens(y=y, sr=sr, n_chroma=config['audio_&_feature']['n_chroma']).T,axis=config['audio_&_feature']['axis'])
+    contrast = np.mean(librosa.feature.spectral_contrast(y=y, sr=sr).T,axis=config['audio_&_feature']['axis'])
+    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr,).T,axis=config['audio_&_feature']['axis'])
     
     embedding=[rms,spec_cent,spec_bw,rolloff,zcr,
                *mfcc,*melspec,*chroma_stft,*chroma_cq,*chroma_cens,*contrast,*tonnetz]
     
     return embedding
+
+def feature_extractor(sr,embedding,data,columns,y,config):
+    feats=[embedding(x,sr,config) for x in data]
+    feats_df=pd.DataFrame(feats,columns=columns)
+    ys=feats_df.shape[0]*y
+    feats_df['status']=ys
+    return feats_df
+
+def main_caller(config_path: Text) -> None:
+    with open(config_path) as conf_file:
+        config = yaml.safe_load(conf_file)
+
+    pos = np.load(config['preprocessing']['processed_audio_pos'],allow_pickle=True)
+    neg = np.load(config['preprocessing']['processed_audio_neg'],allow_pickle=True)
+
+    positive=['covid-19']
+    negative=['healthy']
+
+    columns = librosa_feature_columns()
+
+    pos_features = feature_extractor(
+        config['audio_&_feature']['sampling_rate'],
+        librosa_normal_embedding,
+        pos,
+        columns,
+        positive,
+        config
+        )
+    
+    neg_features = feature_extractor(
+        config['audio_&_feature']['sampling_rate'],
+        librosa_normal_embedding,
+        neg,
+        columns,
+        negative,
+        config
+        )
+    
+    covid_features = pd.concat([pos_features,neg_features],axis=0).reset_index(drop=True)
+    covid_features.to_csv(config['feature_extraction']['features_path'],index=False)
+
+if __name__ == '__main__':
+
+    args_parser = argparse.ArgumentParser()
+    args_parser.add_argument('--config', dest='config', required=True)
+    args = args_parser.parse_args()
+
+    main_caller(config_path=args.config)

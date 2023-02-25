@@ -3,25 +3,35 @@ base:
 
 audio_&_feature:
   sampling_rate: 22050
+  axis: 0
+  n_mfcc: 40
+  n_mels: 40
+  fmax: 8000
+  n_chroma: 36
 
 preprocessing:
+  db_level: 33
+
   raw_audio_pos: 'data/raw/cohort_1_pos.npy'
   raw_audio_neg: 'data/raw/cohort_1_neg.npy'
 
-  processed_audio_pos: 'data/processed/cohort_1_pos.npy'
-  processed_audio_neg: 'data/processed/cohort_1_neg.npy'
+  processed_audio_pos: 'data/preprocessed/cohort_1_pos.npy'
+  processed_audio_neg: 'data/preprocessed/cohort_1_neg.npy'
 
 feature_extraction:
   features_path: 'data/features/covid_features.csv'
+  target_column: status
 
 data_split:
   test_size: 0.2
-  trainset_path: 'data/processed/train_iris.csv'
-  testset_path: 'data/processed/test_iris.csv'
+  trainset_path: 'data/features/train.csv'
+  testset_path: 'data/features/test.csv'
 
 train:
+  model_path: 'models/xgb_models.joblib'
 
-reports:
-
-
-
+evaluate:
+  reports_dir: reports
+  metrics_file: 'metrics.json'
+  confusion_matrix_image: 'confusion_matrix.png'
+  confusion_matrix_data: 'confusion_matrix_data.csv'
