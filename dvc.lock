@@ -1,0 +1,127 @@
+schema: '2.0'
+stages:
+  preprocessing:
+    cmd: python src/preprocessing.py --config=params.yaml
+    deps:
+    - path: src/preprocessing.py
+      md5: 083b86b39d4d7a3fe2f081b0a9a511ba
+      size: 1864
+    params:
+      params.yaml:
+        preprocessing:
+          db_level: 33
+          raw_audio_pos: data/raw/cohort_1_pos.npy
+          raw_audio_neg: data/raw/cohort_1_neg.npy
+          processed_audio_pos: data/preprocessed/cohort_1_pos.npy
+          processed_audio_neg: data/preprocessed/cohort_1_neg.npy
+    outs:
+    - path: data/preprocessed/cohort_1_neg.npy
+      md5: 2a1f297669c7f2553edbd5025ee03a7d
+      size: 361267328
+    - path: data/preprocessed/cohort_1_pos.npy
+      md5: c4b625adcfd8fbbec7910c86f4b2cd80
+      size: 165110528
+  feature_extraction:
+    cmd: python src/feature_extraction.py --config=params.yaml
+    deps:
+    - path: data/preprocessed/cohort_1_neg.npy
+      md5: 2a1f297669c7f2553edbd5025ee03a7d
+      size: 361267328
+    - path: data/preprocessed/cohort_1_pos.npy
+      md5: c4b625adcfd8fbbec7910c86f4b2cd80
+      size: 165110528
+    - path: src/feature_extraction.py
+      md5: b4042b96e38e4ce974fe0aa5b1ff5cee
+      size: 4146
+    params:
+      params.yaml:
+        feature_extraction:
+          features_path: data/features/covid_features.csv
+          target_column: status
+        preprocessing:
+          db_level: 33
+          raw_audio_pos: data/raw/cohort_1_pos.npy
+          raw_audio_neg: data/raw/cohort_1_neg.npy
+          processed_audio_pos: data/preprocessed/cohort_1_pos.npy
+          processed_audio_neg: data/preprocessed/cohort_1_neg.npy
+    outs:
+    - path: data/features/covid_features.csv
+      md5: 1c41f581be6774a5c370618b3ba31c70
+      size: 11498996
+  data_split:
+    cmd: python src/data_split.py --config=params.yaml
+    deps:
+    - path: data/features/covid_features.csv
+      md5: 1c41f581be6774a5c370618b3ba31c70
+      size: 11498996
+    - path: src/data_split.py
+      md5: fbd5e21768c9c6a8e4cbc3a9295977d1
+      size: 956
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+        data_split:
+          test_size: 0.2
+          trainset_path: data/features/train.csv
+          testset_path: data/features/test.csv
+        feature_extraction:
+          features_path: data/features/covid_features.csv
+          target_column: status
+    outs:
+    - path: data/features/test.csv
+      md5: b0586fb535130d306222da001c161ece
+      size: 2292986
+    - path: data/features/train.csv
+      md5: 1c4df59337558c3914369f01e0167bf3
+      size: 9170048
+  train:
+    cmd: python src/train.py --config=params.yaml
+    deps:
+    - path: data/features/train.csv
+      md5: 1c4df59337558c3914369f01e0167bf3
+      size: 9170048
+    - path: src/train.py
+      md5: 2a1fb4163cdc7983210743b642057243
+      size: 782
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+        data_split.trainset_path: data/features/train.csv
+        train:
+          model_path: models/xgb_models.joblib
+    outs:
+    - path: models/xgb_models.joblib
+      md5: 9a432820908ae93916acb6935f73d153
+      size: 176548
+  evaluate:
+    cmd: python src/evaluate_and_visualize.py --config=params.yaml
+    deps:
+    - path: data/features/test.csv
+      md5: b0586fb535130d306222da001c161ece
+      size: 2292986
+    - path: models/xgb_models.joblib
+      md5: 9a432820908ae93916acb6935f73d153
+      size: 176548
+    - path: src/evaluate_and_visualize.py
+      md5: ff6b6ff6c32f6a1bdda68acab8ec936b
+      size: 2720
+    params:
+      params.yaml:
+        base:
+          random_state: 42
+        data_split.testset_path: data/features/test.csv
+        evaluate:
+          reports_dir: reports
+          metrics_file: metrics.json
+          confusion_matrix_image: confusion_matrix.png
+          confusion_matrix_data: confusion_matrix_data.csv
+        feature_extraction.target_column: status
+    outs:
+    - path: reports/confusion_matrix.png
+      md5: 0de05936e0445de47e11183fbea092ab
+      size: 24732
+    - path: reports/metrics.json
+      md5: 66c447a5640a2411fd5aa38454cc0f05
+      size: 32
