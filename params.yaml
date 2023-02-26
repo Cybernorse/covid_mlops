@@ -35,3 +35,10 @@ evaluate:
   metrics_file: 'metrics.json'
   confusion_matrix_image: 'confusion_matrix.png'
   confusion_matrix_data: 'confusion_matrix_data.csv'
+
+mlflow_config:
+  artifacts_dir: artifacts
+  experiment_name: silent based cough segmentation
+  run_name: covid
+  registered_model_name: ExtraTressClassifier
+  remote_server_uri: http://0.0.0.0:1234

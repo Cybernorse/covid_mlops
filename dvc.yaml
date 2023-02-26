@@ -36,28 +36,19 @@ stages:
     - data/features/test.csv
 
   train: 
-    cmd: python src/train.py --config=params.yaml
+    cmd: python src/train_and_evaluate.py --config=params.yaml
     deps:
     - data/features/train.csv
-    - src/train.py
-    params:
-    - base
-    - data_split.trainset_path
-    - train
-    outs:
-    - models/xgb_models.joblib
-  
-  evaluate:
-    cmd: python src/evaluate_and_visualize.py --config=params.yaml
-    deps: 
     - data/features/test.csv
-    - models/xgb_models.joblib
-    - src/evaluate_and_visualize.py
+    - src/train_and_evaluate.py
     params:
     - base
-    - data_split.testset_path
+    - data_split
+    - train
     - evaluate
     - feature_extraction.target_column
     outs:
+    - models/xgb_models.joblib
     - reports/confusion_matrix.png
     - reports/metrics.json
+  

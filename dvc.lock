@@ -76,25 +76,43 @@ stages:
       md5: 1c4df59337558c3914369f01e0167bf3
       size: 9170048
   train:
-    cmd: python src/train.py --config=params.yaml
+    cmd: python src/train_and_evaluate.py --config=params.yaml
     deps:
+    - path: data/features/test.csv
+      md5: b0586fb535130d306222da001c161ece
+      size: 2292986
     - path: data/features/train.csv
       md5: 1c4df59337558c3914369f01e0167bf3
       size: 9170048
-    - path: src/train.py
-      md5: 2a1fb4163cdc7983210743b642057243
-      size: 782
+    - path: src/train_and_evaluate.py
+      md5: 55979a6dfd0c4b4492662790fc3487e6
+      size: 3518
     params:
       params.yaml:
         base:
           random_state: 42
-        data_split.trainset_path: data/features/train.csv
+        data_split:
+          test_size: 0.2
+          trainset_path: data/features/train.csv
+          testset_path: data/features/test.csv
+        evaluate:
+          reports_dir: reports
+          metrics_file: metrics.json
+          confusion_matrix_image: confusion_matrix.png
+          confusion_matrix_data: confusion_matrix_data.csv
+        feature_extraction.target_column: status
         train:
           model_path: models/xgb_models.joblib
     outs:
     - path: models/xgb_models.joblib
-      md5: 9a432820908ae93916acb6935f73d153
-      size: 176548
+      md5: cc26d044b89b7e652633abadd1afc2ab
+      size: 8782464
+    - path: reports/confusion_matrix.png
+      md5: a850f02977e34cdb128b1109c3ca2dd9
+      size: 24493
+    - path: reports/metrics.json
+      md5: 9228cf23485ec8646895b3d360fffaeb
+      size: 32
   evaluate:
     cmd: python src/evaluate_and_visualize.py --config=params.yaml
     deps:
