@@ -17,9 +17,6 @@ from urllib.parse import urlparse
 
 sys.path.append('/home/bigpenguin/projects/dvc/')
 
-# my modules
-from models import train
-
 def train_model(config_path: Text) -> None:
 
     '''
@@ -107,7 +104,6 @@ def train_model(config_path: Text) -> None:
 
     models_path = config['train']['model_path']
     joblib.dump(etc, models_path)
-
 
 
 if __name__ == '__main__':

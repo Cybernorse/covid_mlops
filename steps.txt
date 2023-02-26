@@ -11,3 +11,4 @@
 11. write all the pipeline stages and assign them parameters from params.yaml and test them one by one
 12. create dvc.yaml file and write end to end pipeline and test it with dvc repro command
 13. write mlflow model and metric logger and test it with mlflow ui
+14. 

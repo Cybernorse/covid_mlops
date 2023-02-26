@@ -12,22 +12,22 @@ stages:
           db_level: 33
           raw_audio_pos: data/raw/cohort_1_pos.npy
           raw_audio_neg: data/raw/cohort_1_neg.npy
-          processed_audio_pos: data/preprocessed/cohort_1_pos.npy
-          processed_audio_neg: data/preprocessed/cohort_1_neg.npy
+          processed_audio_pos: data/preprocessed/pre_cohort_1_pos.npy
+          processed_audio_neg: data/preprocessed/pre_cohort_1_neg.npy
     outs:
-    - path: data/preprocessed/cohort_1_neg.npy
+    - path: data/preprocessed/pre_cohort_1_neg.npy
       md5: 2a1f297669c7f2553edbd5025ee03a7d
       size: 361267328
-    - path: data/preprocessed/cohort_1_pos.npy
+    - path: data/preprocessed/pre_cohort_1_pos.npy
       md5: c4b625adcfd8fbbec7910c86f4b2cd80
       size: 165110528
   feature_extraction:
     cmd: python src/feature_extraction.py --config=params.yaml
     deps:
-    - path: data/preprocessed/cohort_1_neg.npy
+    - path: data/preprocessed/pre_cohort_1_neg.npy
       md5: 2a1f297669c7f2553edbd5025ee03a7d
       size: 361267328
-    - path: data/preprocessed/cohort_1_pos.npy
+    - path: data/preprocessed/pre_cohort_1_pos.npy
       md5: c4b625adcfd8fbbec7910c86f4b2cd80
       size: 165110528
     - path: src/feature_extraction.py
@@ -42,8 +42,8 @@ stages:
           db_level: 33
           raw_audio_pos: data/raw/cohort_1_pos.npy
           raw_audio_neg: data/raw/cohort_1_neg.npy
-          processed_audio_pos: data/preprocessed/cohort_1_pos.npy
-          processed_audio_neg: data/preprocessed/cohort_1_neg.npy
+          processed_audio_pos: data/preprocessed/pre_cohort_1_pos.npy
+          processed_audio_neg: data/preprocessed/pre_cohort_1_neg.npy
     outs:
     - path: data/features/covid_features.csv
       md5: 1c41f581be6774a5c370618b3ba31c70
@@ -85,8 +85,8 @@ stages:
       md5: 1c4df59337558c3914369f01e0167bf3
       size: 9170048
     - path: src/train_and_evaluate.py
-      md5: 55979a6dfd0c4b4492662790fc3487e6
-      size: 3518
+      md5: 4f1b2b8f63f74165dd2fa4abaadcfdbb
+      size: 3478
     params:
       params.yaml:
         base:

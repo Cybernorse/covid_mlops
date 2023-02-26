@@ -7,14 +7,14 @@ stages:
     params:
     - preprocessing
     outs:
-    - data/preprocessed/cohort_1_pos.npy
-    - data/preprocessed/cohort_1_neg.npy
+    - data/preprocessed/pre_cohort_1_pos.npy
+    - data/preprocessed/pre_cohort_1_neg.npy
 
   feature_extraction:
     cmd: python src/feature_extraction.py --config=params.yaml
     deps:
-    - data/preprocessed/cohort_1_pos.npy
-    - data/preprocessed/cohort_1_neg.npy
+    - data/preprocessed/pre_cohort_1_pos.npy
+    - data/preprocessed/pre_cohort_1_neg.npy
     - src/feature_extraction.py
     params:
     - preprocessing

@@ -15,8 +15,8 @@ preprocessing:
   raw_audio_pos: 'data/raw/cohort_1_pos.npy'
   raw_audio_neg: 'data/raw/cohort_1_neg.npy'
 
-  processed_audio_pos: 'data/preprocessed/cohort_1_pos.npy'
-  processed_audio_neg: 'data/preprocessed/cohort_1_neg.npy'
+  processed_audio_pos: 'data/preprocessed/pre_cohort_1_pos.npy'
+  processed_audio_neg: 'data/preprocessed/pre_cohort_1_neg.npy'
 
 feature_extraction:
   features_path: 'data/features/covid_features.csv'
