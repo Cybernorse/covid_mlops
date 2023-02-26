@@ -17,8 +17,6 @@ from urllib.parse import urlparse
 
 sys.path.append('/home/bigpenguin/projects/dvc/')
 
-# my modules
-from models import train
 
 def train_model(config_path: Text) -> None:
 
