@@ -7,14 +7,14 @@ import yaml
 import argparse
 
 # librosa features column names formation
-def librosa_feature_columns():
+def librosa_feature_columns(config):
 #     1 1 1 1 1 40 128 12 12 12 7 6
     headers=[]
-    mf=['mfcc'+str(i) for i in range(40)]
-    mspec=['melspec'+str(i) for i in range(40)]
-    ch_sftf=['chroma_stft'+str(i) for i in range(36)]
-    chr_cq=['chroma_cq'+str(i) for i in range(36)]
-    chcens=['chroma_cens'+str(i) for i in range(36)]
+    mf=['mfcc'+str(i) for i in range(config['audio_&_feature']['n_mfcc'])]
+    mspec=['melspec'+str(i) for i in range(config['audio_&_feature']['n_mels'])]
+    ch_sftf=['chroma_stft'+str(i) for i in range(config['audio_&_feature']['n_chroma'])]
+    chr_cq=['chroma_cq'+str(i) for i in range(config['audio_&_feature']['n_chroma'])]
+    chcens=['chroma_cens'+str(i) for i in range(config['audio_&_feature']['n_chroma'])]
     const=['contrast'+str(i) for i in range(7)]
     tonn=['tonnetz'+str(i) for i in range(6)]
     [headers.append(i) for i in ['rms0','spec_cent0','spec_bw0','rolloff0','zcr0']]
@@ -74,7 +74,7 @@ def main_caller(config_path: Text) -> None:
     positive=['covid-19']
     negative=['healthy']
 
-    columns = librosa_feature_columns()
+    columns = librosa_feature_columns(config)
 
     pos_features = feature_extractor(
         config['audio_&_feature']['sampling_rate'],

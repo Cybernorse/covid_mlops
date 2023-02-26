@@ -19,6 +19,7 @@ stages:
     params:
     - preprocessing
     - feature_extraction
+    - audio_&_feature
     outs:
     - data/features/covid_features.csv
 
