@@ -56,8 +56,8 @@ def train_model(config_path: Text) -> None:
         acc = accuracy_score(prediction,y_test)*100
         mcc = matthews_corrcoef(prediction,y_test)
 
-        mlflow.log_param("f1-score", f1)
-        mlflow.log_param("Accuracy", acc)
+        mlflow.log_metric("f1-score", f1)
+        mlflow.log_metric("Accuracy", acc)
         mlflow.log_metric("Mathews correlation coefficient", mcc)
 
         tracking_uri_type_store = urlparse(mlflow.get_artifact_uri()).scheme
@@ -72,7 +72,7 @@ def train_model(config_path: Text) -> None:
             mlflow.sklearn.load_model(etc, "model")
 
 
-#################################################################
+################################################################
 
     # labels = load_iris(as_frame=True).target_names.tolist()
     labels = ['covid-19','healthy']

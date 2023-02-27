@@ -136,3 +136,5 @@ zc.lockfile==3.0
 zipp==3.13.0
 xgboost==1.1.1
 matplotlib==3.5.3
+dvc==2.10.2
+mlflow==1.30.0

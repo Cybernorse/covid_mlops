@@ -92,8 +92,8 @@ stages:
       md5: daa0e12fdd837a4849b6561defa49e9d
       size: 6318087
     - path: src/train_and_evaluate.py
-      md5: 4f1b2b8f63f74165dd2fa4abaadcfdbb
-      size: 3478
+      md5: eeb1451e6f0aac1e187ac7c0d46251f2
+      size: 3479
     params:
       params.yaml:
         base:
